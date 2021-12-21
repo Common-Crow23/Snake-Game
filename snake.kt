@@ -1,10 +1,39 @@
-fun main(args: Array<String>) {
-    val number = 60
+package com.zetcode
+
+import java.awt.EventQueue
+import javax.swing.JFrame
+
+class Snake : JFrame() {
     
-    print("Factors of $number are: ")
-    for (i in 1..number) {
-         if (number % 1 == 0) {
-             print("$i ")
-         }
+    init {
+        
+        initUI()
+    }
+    
+    private fun initUI() {
+        
+        add (Board())
+        
+        title = "Snake"
+        
+        is Resizable = false
+        pack()
+        
+        setLocationRelativeTo(null)
+        defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+    }
+    
+    companian object {
+        @JvmStatic
+        fun main() {
+            
+            EventQueue.invokeLater {
+                val ex = Snake()
+                ex.isVisible = true
+            }
+        }
     }
 }
+            
+       
+       
