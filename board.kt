@@ -76,3 +76,163 @@ class Board : JPanel(), ActionListener {
     }
     
     private fun doDrawing(g: Graphics) {
+        
+        if (inGame) {
+            
+            g.drawImage(apple, appleX, appleY, this)
+            
+            for (z in 0 until nOfDots) {
+                if (z == 0) {
+                    g.drawImage(head, x[z], y[z], this)
+                } else {
+                    g.drawImage(ball, x[z], y[z], this)
+                }
+            }
+            
+            Toolkit.getDefaultToolkit().sync()
+            
+        } else {
+            
+            gameOver(g)
+        }
+    }
+    
+    private fun gameOver(g: Graphics) {
+        
+        val msg = "Game Over"
+        val small = Font("Helvetica", Font.BOLD, 14)
+        val fontMetrics = getFontMetrics(small)
+        
+        val rh = RenderingHints(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALAS_ON)
+        
+        rh[RenderingHints.KEY_RENDERING] = Rendering.VALUE_RENDER_QUALITY
+        
+        (g as Graphics2D).setRenderingHints(rh)
+        
+        g.color = Color.white
+        g.font = small
+        g.drawString(msg, (boardWidth - fontMetrics.stringWidth(msg)) / 2,
+            boardHeight / 2)
+    }
+    
+    private fun checkApple() {
+        
+        if (x[0] == appleX && y[0] == appleY) {
+            
+            nOfDots++
+            locateApple()
+        }
+    }
+    
+    private fun move() {
+        
+        for (z in nOfDots downTo 1) {
+            x[z] = x[z - 1]
+            y[z] = y[z - 1]
+        }
+        
+        if (leftDirection) {
+            x[0] -= dotSize
+        }
+        
+        if (rightDirection) {
+            x[0] += dotSize
+        }
+        
+        if (upDirection) {
+            y[0] -= dotSize
+        }
+        
+        if (downDirection) {
+            y[0] += dotSize
+        }
+    }
+    
+    private fun checkCollision() {
+        
+        for (z in nOfDots downTo 1) {
+            
+            if (z > 4 && x[0] == x[z] && y[0] == y[z]) {
+                inGame = false
+            }
+        }
+        
+        if (y[0] >= boardHeight) {
+            inGame = false
+        }
+        
+        if (y[0] < 0) {
+            inGame = false
+        }
+        
+        if (x[0] >= boardWidth) {
+            inGame = false
+        }
+        
+        if (x[0] < 0) {
+            inGame = false
+        }
+        
+        if (!inGame) {
+            timer!!.stop()
+        }
+    }
+    
+    private fun locateApple() {
+        
+        var r = (Math.random() * randPos).toInt()
+        appleX = r * dotSize
+        
+        r = (Math.random() * randPos).toInt()
+        appleY = r * dotSize
+    }
+    
+    override fun actionPerformed(e: ActionEvent) {
+        
+        if (inGame) {
+            
+            checkApple()
+            checkCollision()
+            move()
+        }
+        
+        repaint()
+    }
+    
+    private inner class TAdapter : KeyAdapter() {
+        
+        override fun keyPressed(e: KeyEvent?) {
+            
+            val key = e!!.keyCode
+            
+            if (key == KeyEvent.VK_LEFT && !rightDirection) {
+                leftDirection = true
+                upDirection = false
+                downDirection = false
+            }
+            
+            if (key == KeyEvent.VK_RIGHT && !leftDirection) {
+                rightDirection = true
+                upDirection = false
+                downDirection = false
+            }
+            
+            if (key == KeyEvent.VK_UP && !downDirection) {
+                upDirection = true
+                rightDirection = false
+                leftDirection = false
+            }
+            
+            if (key == KeyEvent.VK_DOWN && !upDirection) {
+                downDirection = true
+                rightDirection = false
+                leftDirection = false
+            }
+        }
+    }
+}
+            
+                
+      
